@@ -1,22 +1,31 @@
-import com.github.jedesah._
+import com.github.jedesah.Tournament._
 import org.scalatest._
 import com.github.nscala_time.time.Imports._
 
-trait  defaults {
-  /** 3 courts, numbered from 1 to 3 */
-  val defaultCourts = Map(1 -> MatchLocation("Court 1"), 2 -> MatchLocation("Court 2"), 3 -> MatchLocation("Court 3"))
-  /** Courts are open from 9:00 am. to 11:00 pm. */
-  val defaultHoursOfOperation = (new LocalTime(9, 0), new LocalTime(23, 0))
-  /** Courts are open normally for all 3 days */
-  val defaultCourtAvailabilities = Map(1 -> defaultHoursOfOperation, 2 -> defaultHoursOfOperation, 3 -> defaultHoursOfOperation)
-  /** All courts are available with the same schedule */
-  val defaultAvailabilities = MatchLocationAvailability(defaultCourts.values.toSet, defaultCourtAvailabilities)
+trait defaults {
+  /** Courts are open from 9:00 am. to 10:30 pm. */
+  val defaultHoursOfOperation = (new LocalTime(9, 0), new LocalTime(22, 30))
+  /** Courts are open normally for all 2 days */
+  val defaultAvailability = Map(
+    1 -> defaultHoursOfOperation,
+    2 -> defaultHoursOfOperation
+  )
+  /** All courts have the same Availability */
+  val defaultAvailabilities = Map(
+    "Court1" -> defaultAvailability,
+    "Court2" -> defaultAvailability
+  )
+  
+  val defaultParticipants = Set("Gen", "Bob", "Guillaume Hebert", "Yohann Labonte")
 
-  /** By default, there must be a minimum of 3 hours between each match */
-  val defaultRules = Rules(Duration.standardHours(3))
+  /** By default,
+    there must be a minimum of 3 hours between each match
+    each match is expected to last 1 hour
+  */
+  val defaultRules = Rules(Duration.standardHours(3), Duration.standardHours(1))
 }
 
-class GenerateTournamentFeatureSpec extends FeatureSpec with ShouldMatchers with GivenWhenThen {
+class GenerateTournamentFeatureSpec extends FeatureSpec with ShouldMatchers with GivenWhenThen with defaults {
   info("It is common in tournaments of competitive nature that there is a miminum time betweeen matches involving the same participant in order for the participant to rest")
   info("Il est commun dans un tournoi de nature competitive d'avoir un minimum de temps entre les parties qui implique un meme joueur afin de permettre a ce dernier de se reposer.")
   feature("Minimum rest time / Temps minimal de repos") {
@@ -57,9 +66,28 @@ class GenerateTournamentFeatureSpec extends FeatureSpec with ShouldMatchers with
   
   feature("respect availabilities / respect des disponibilites") {
     Given("a set of availabilities / une collection de disponibilites")
+    val availabilities = Map(
+      "Court1" -> Map(
+	1 -> ((new LocalTime(9,0), new LocalTime(23,0))),
+	2 -> ((new LocalTime(12,0), new LocalTime(17,0)))
+      ),
+      "Court2" -> Map(
+	1 -> (new LocalTime(9,0), new LocalTime(23,0)),
+	2 -> (new LocalTime(13,0), new LocalTime(18,0))
+      ),
+      "Court3" -> Map(
+	1 -> (new LocalTime(12,0), new LocalTime(17,0)),
+	2 -> (new LocalTime(10,30), new LocalTime(16,45))
+      )
+    )
     When("the tournament is generated / le tournoi est genere")
+    val constraints = Constraints(defaultRules, availabilities)
+    val tournament = generate(constraints, defaultParticipants)
     Then("MatchLocation availabilities are respected / les disponibilites sont respecte")
-    pending
+    tournament.draw.allMatches.forall { match_ =>
+      val (matchLocation, day, time) = tournament.schedule(match_)
+      constraints.isMatchStartTimeValid(time, matchLocation, day)
+    }
   }
   
   feature("Randomized draw / Tirage aleatoire") {
@@ -75,9 +103,8 @@ class GenerateTournamentSpec extends FunSpec with ShouldMatchers with defaults {
       (pending)
     }
     describe("involves all specified participants / inclut tous les participants specifies") {
-      val participants = Set("Gen", "Bob", "Guillaume Hebert", "Yohann Labonte")
-      val tournamentInstance = Tournament.generate(Set(defaultAvailabilities), defaultRules, participants)
-      tournamentInstance.draw.contenders should equal (participants)
+      val tournamentInstance = generate(Constraints(defaultRules, defaultAvailabilities), defaultParticipants)
+      tournamentInstance.draw.contenders should equal (defaultParticipants)
     }
   }
 }
@@ -100,15 +127,24 @@ class MatchSpec extends FunSpec with ShouldMatchers {
 
     describe("update") {
       it("should correclty update itself. i.e. the update method shoud return a new Tournament state that correclty reflects the fact that the specified player won / devrait mettre a jour le tournoi afin de refleter la victoire du joueur specifie") {
-	val matchToUpdate = SimpleMatch(Participant("Paul"), Participant("Andrea"))
-	val startMatch = CompositeMatch(matchToUpdate, SimpleMatch(Participant("Jon"), Participant("George")))
-	val expectedMatch = CompositeMatch(new SimpleMatch(Participant("Paul"), Participant("Andrea"), Participant("Paul")), SimpleMatch(Participant("Jon"), Participant("George")))
-	startMatch.update(Participant("Paul")) should equal (expectedMatch)
+	val matchToUpdate = SimpleMatch("Paul", "Andrea")
+	val startMatch = CompositeMatch(matchToUpdate, SimpleMatch("Jon", "George"))
+	val expectedMatch = CompositeMatch(new SimpleMatch("Paul", "Andrea", "Paul"), SimpleMatch("Jon", "George"))
+	startMatch.update("Paul") should equal (expectedMatch)
       }
       it("should throw an IllegalArgumentException if the String is not among the remaining containders / devrait lance une exception de type IllegalArgumentException si le participant n'est pas parmis les participants qui reste") {
-	val match_ = SimpleMatch(Participant("Mary"), Participant("Judy"))
-	evaluating { match_.update(Participant("George")) } should produce [IllegalArgumentException]
+	val match_ = SimpleMatch("Mary", "Judy")
+	evaluating { match_.update("George") } should produce [IllegalArgumentException]
       }
+    }
+  }
+}
+
+class ConstraintsSpec extends FunSpec with ShouldMatchers {
+  describe("Constraints") {
+    describe("isMatchStartTimeValid") {
+      // TODO: Ecrivez les tests qui permettront de valider si le temps de commencement est valide ou non
+      // Indice: Il y a au moins 3 cas a traite
     }
   }
 }
