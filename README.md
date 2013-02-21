@@ -15,3 +15,10 @@ All kinds of information can also be queried from the Match class which can not 
 ## Current Status
 
 The specifications for this project are expressed through the Scala type system but also with some ScalaTest specifications wich are yet to be implemented.
+
+
+## Developping
+
+Tournament uses sbt as a build tool, so start by making sure that sbt is correclty installed on your machine, you can do that by running the sbt sbt-version command.
+
+Once sbt is installed, simply run the sbt command in the root folder. The sbt console will start and then you can type test to run the tests.
