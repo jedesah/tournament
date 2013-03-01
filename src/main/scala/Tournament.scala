@@ -18,7 +18,7 @@ object Tournament {
   case class Rules(minTimeBeetweenMatch: Duration, expectedMatch:Duration)
 
   case class Constraints(rules: Rules, availabilities: Availabilities) {
-    def isMatchStartTimeValid(startTime: LocalTime, location: MatchLocation, day: Day) = ???
+    def isMatchStartTimeValid(startTime: LocalTime, location: MatchLocation, day: Day):Boolean = ???
   }
 
   case class Tournament(draw: Match, schedule: Map[Match, (MatchLocation, Day, LocalTime)])
@@ -46,6 +46,7 @@ object Tournament {
     def findMatchWithParticipant(participant: Participant) = ???
     def allMatches = Set(this)
   }
+  /** A CompositeMatch is a Match that opposes the winner of the first match against the winner of the second. */
   case class CompositeMatch(first: Match, second: Match) extends Match {
     def this(first: Match, second: Match, winner_ : Participant) = {
       this(first, second)
