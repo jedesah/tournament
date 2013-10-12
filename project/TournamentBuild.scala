@@ -10,10 +10,10 @@ object TournamentBuild extends Build {
       name := "Tournament",
       organization := "com.github.jedesah",
       version := "0.1-SNAPSHOT",
-      scalaVersion := "2.10.0",
+      scalaVersion := "2.10.3",
       libraryDependencies ++= Seq(
-	"org.scalatest" % "scalatest_2.10" % "2.0.M5b" % "test",
-	"com.github.nscala-time" %% "nscala-time" % "0.2.0"
+	       "org.scalatest" % "scalatest_2.10" % "2.0.RC1" % "test",
+        "com.github.nscala-time" %% "nscala-time" % "0.6.0"
       )
     )
   )

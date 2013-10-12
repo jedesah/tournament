@@ -21,7 +21,7 @@ object Tournament {
   case class Constraints(rules: Rules, availabilities: Availabilities) {
     /** Determines whether the startTime, location and day is valid given these constraints.
 	Carefull, if the MatchLocation is available from 9 am. to 5 pm. and a match is scheduled for 5 pm.
-	Then the match's scheduling would be invalid since the MatchLocation is longer available at the start of the match.
+	Then the match's scheduling would be invalid since the MatchLocation is no longer available at the start of the match.
     */
     def isMatchStartTimeValid(startTime: LocalTime, location: MatchLocation, day: Day):Boolean = ???
   }
@@ -33,7 +33,7 @@ object Tournament {
 	Some(Participant) if the match has been played and won
     */
     val winner: Option[Participant] = None
-    /** Returns all Matches to play. ie. the matchs for whom the two participants is already know. */
+    /** Returns all Matches to play. ie. the matchs for whom the two participants are already know. */
     def determinedSubMatches: Set[SimpleMatch]
     /** Returns all SimpleMatchs contained directly or indirectly by this Match */
     def leafSubMatches: Set[SimpleMatch]

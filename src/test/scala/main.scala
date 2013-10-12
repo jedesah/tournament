@@ -32,7 +32,7 @@ class GenerateTournamentFeatureSpec extends FeatureSpec with ShouldMatchers with
     scenario("The number of participants, minimum rest time and MatchLocationAvailabilities admit a solution / Le nombre de partipants, la quantite minimal de repos et les disponibilites de terrains admetent une solution") {
       Given("the above scenario / Le scenario mentionne ci-haut")
       When("the tournament is generated / le tournoi est genere")
-      Then("the tournament respects the minimum amount of rest of all participants / l tournoi respecte la quantite minimal de repos devant etre accorde a chacun des participants")
+      Then("the tournament respects the minimum amount of rest of all participants / le tournoi respecte la quantite minimal de repos devant etre accorde a chacun des participants")
       pending
     }
     scenario("The Number of participants, minimum rest time and MatchLocationAvailability do not admit a solution / Le Nombre de participatns, temps de repos minimum et disponibilites de terrains n'admetent pas une solution") {
@@ -45,7 +45,7 @@ class GenerateTournamentFeatureSpec extends FeatureSpec with ShouldMatchers with
   
   feature("Balanced draw / Tirage balance") {
     scenario("Number of participants is a power of two / Le nombre de participants est une puissance de deux") {
-      Given("A number of participants that is a power of deux / un nombre de participants qui est une puissance de deux")
+      Given("A number of participants that is a power of two / un nombre de participants qui est une puissance de deux")
       When("the tournament is generated / le tournoi est genere")
       Then("each participant should be required to win the same amount of matches in order to win the tournament / chaque participant devrait avoir a gagner le meme nombre de match afin de gagner le tournoi")
       pending
